@@ -124,11 +124,14 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
   .g-tb { display:none!important; }
   .phalf-label { display:none!important; }
   .ecanvas { padding:0; background:white!important; min-height:unset; }
-  .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; }
-  .phalf { border-color:#999!important; overflow:visible!important; }
+  .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:8mm; }
+  /* hide editable side and divider, only print preview */
+  .phalf.ed { display:none!important; }
+  .pdiv { display:none!important; }
+  .phalf { border-color:#999!important; overflow:visible!important; flex:1; }
   .phalf-body { overflow:visible!important; }
   button { display:none!important; }
-  @page { size:A4 landscape; margin:6mm; }
+  @page { size:A4; margin:6mm; }
   body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 }
 `;
