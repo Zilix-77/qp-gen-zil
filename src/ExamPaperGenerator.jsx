@@ -120,19 +120,25 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 
 /* print */
 @media print {
-  body { background:white!important; }
-  .g-tb { display:none!important; }
+  body { background:white!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .g-tb, .layout-strip { display:none!important; }
   .phalf-label { display:none!important; }
-  .ecanvas { padding:0; background:white!important; min-height:unset; }
-  .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:8mm; }
-  /* hide editable side and divider, only print preview */
+  .ecanvas { padding:0; background:white!important; min-height:unset; display:block; }
+  .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
   .edit-panel { display:none!important; }
   .pdiv { display:none!important; }
-  .phalf { border-color:#999!important; overflow:visible!important; flex:1; }
+  .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 12mm; }
   .phalf-body { overflow:visible!important; }
   button { display:none!important; }
-  @page { size:A4; margin:6mm; }
-  body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* scale up all text for readable PDF at 100% zoom */
+  .phalf-body > div { font-size:13pt!important; line-height:1.5!important; }
+  .phalf-body table { font-size:12pt!important; width:100%!important; }
+  .phalf-body th { font-size:11pt!important; padding:4pt 6pt!important; }
+  .phalf-body td { font-size:11pt!important; padding:4pt 6pt!important; }
+  .phalf-body input, .phalf-body textarea, .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
+
+  @page { size:A4 portrait; margin:10mm; }
 }
 `;
 
