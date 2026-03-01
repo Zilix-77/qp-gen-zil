@@ -223,7 +223,7 @@ function useGlobalStyles() {
 
 /* ─── HOME PAGE ──────────────────────────────────────────────────────────────── */
 
-function HomePage({ onStart }) {
+function HomePage({ onStart, onHelp }) {
   const [subject, setSubject] = useState("");
   const [department, setDepartment] = useState("");
   const [code, setCode] = useState("");
@@ -287,7 +287,10 @@ function HomePage({ onStart }) {
         </div>
 
         <button className="h-start" onClick={submit} disabled={!subject.trim()}>Build Paper →</button>
-        <div className="h-foot">A4 landscape · two-sided · print / PDF ready</div>
+        <div className="h-foot" style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+          <span>A4 landscape · two-sided · print / PDF ready</span>
+          <button onClick={onHelp} style={{ background:"transparent", border:"none", color:"rgba(245,242,236,0.35)", fontFamily:"Inconsolata,monospace", fontSize:"10px", cursor:"pointer", letterSpacing:"1px", padding:0, textDecoration:"underline" }}>? Help</button>
+        </div>
       </div>
     </div>
   );
@@ -542,7 +545,7 @@ function PrintDialog({ onConfirm, onCancel }) {
 
 /* ─── EDITOR PAGE ────────────────────────────────────────────────────────────── */
 
-function EditorPage({ initialData, onBack }) {
+function EditorPage({ initialData, onBack, onHelp }) {
   const [data, setData] = useState(initialData);
   const [editMode, setEditMode] = useState(true);
   const [dupMode, setDupMode] = useState(false);
@@ -625,6 +628,7 @@ function EditorPage({ initialData, onBack }) {
       <div className="g-tb">
         <button className="g-btn g-btn-ghost" onClick={onBack}>← Back</button>
         <div className="g-tb-brand">Exam Paper</div>
+        <button className="g-btn g-btn-ghost" onClick={onHelp} title="Open help page">? Help</button>
         <div className="g-tb-subj">{data.subject}</div>
         <button
           className={`g-btn g-btn-ghost ${editMode ? "on" : ""}`}
@@ -690,8 +694,9 @@ export default function ExamPaperGenerator() {
 
   const handleStart = (d) => { setEditorData(d); setPage("editor"); };
 
+  if (page === "help") return <HelpPage onBack={() => setPage("home")} />;
   if (page === "editor" && editorData)
-    return <EditorPage initialData={editorData} onBack={() => setPage("home")} />;
+    return <EditorPage initialData={editorData} onBack={() => setPage("home")} onHelp={() => setPage("help")} />;
 
-  return <HomePage onStart={handleStart} />;
+  return <HomePage onStart={handleStart} onHelp={() => setPage("help")} />;
 }
