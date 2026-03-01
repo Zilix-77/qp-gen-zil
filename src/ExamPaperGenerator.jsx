@@ -118,27 +118,42 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 }
 .phalf input, .phalf textarea { color:#000!important; }
 
+/* separator row */
+.sep-row { display:flex; align-items:center; gap:6px; margin:2px 0; }
+.sep-line { flex:1; height:1px; background:#bbb; }
+.sep-label { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#555; white-space:nowrap; }
+.sep-input { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#333; background:transparent; border:none; border-bottom:1px dashed #aaa; outline:none; width:80px; text-align:center; padding:0 2px; }
+.sep-del { background:none; border:none; color:#c02020; font-size:11px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; }
+
 /* print */
 @media print {
   body { background:white!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .g-tb, .layout-strip { display:none!important; }
   .phalf-label { display:none!important; }
   .ecanvas { padding:0; background:white!important; min-height:unset; display:block; }
-  .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
   .edit-panel { display:none!important; }
-  .pdiv { display:none!important; }
-  .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 12mm; }
-  .phalf-body { overflow:visible!important; }
+  .sep-del, .add-sep-btn { display:none!important; }
   button { display:none!important; }
 
-  /* scale up all text for readable PDF at 100% zoom */
-  .phalf-body > div { font-size:13pt!important; line-height:1.5!important; }
-  .phalf-body table { font-size:12pt!important; width:100%!important; }
-  .phalf-body th { font-size:11pt!important; padding:4pt 6pt!important; }
-  .phalf-body td { font-size:11pt!important; padding:4pt 6pt!important; }
-  .phalf-body input, .phalf-body textarea, .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
+  /* NORMAL print — single preview, portrait */
+  body:not(.dup-print) .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
+  body:not(.dup-print) .pdiv { display:none!important; }
+  body:not(.dup-print) .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 12mm; }
+  body:not(.dup-print) .phalf-body { overflow:visible!important; }
+  body:not(.dup-print) .phalf-body > div { font-size:13pt!important; line-height:1.5!important; }
+  body:not(.dup-print) .phalf-body table { font-size:12pt!important; width:100%!important; }
+  body:not(.dup-print) .phalf-body th { font-size:11pt!important; padding:4pt 6pt!important; }
+  body:not(.dup-print) .phalf-body td { font-size:11pt!important; padding:4pt 6pt!important; }
+  body:not(.dup-print) .phalf-body input, body:not(.dup-print) .phalf-body textarea, body:not(.dup-print) .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
+  body:not(.dup-print) @page { size:A4 portrait; margin:10mm; }
 
-  @page { size:A4 portrait; margin:10mm; }
+  /* DUPLICATE print — two copies side by side, landscape */
+  body.dup-print .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:4mm; display:flex; flex-direction:row; }
+  body.dup-print .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
+  body.dup-print .phalf { border:1px solid #999!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:3mm; }
+  body.dup-print .phalf-body { overflow:visible!important; }
+  body.dup-print .dup-copy { display:flex!important; }
+  @page { size:A4 landscape; margin:5mm; }
 }
 `;
 
@@ -242,7 +257,7 @@ function ECell({ value, onChange, multiline }) {
 
 /* ─── PAPER BODY (full A+B+C) ────────────────────────────────────────────────── */
 
-function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }) {
+function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, onAddSep, onUpdateSep }) {
   const upd = (p, v) => { if (!readOnly && onUpdate) onUpdate(p, v); };
   // Called as f() not <F/> to prevent React unmounting input on every keystroke
   const f = (path, value, multiline = false) =>
@@ -274,7 +289,7 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
             <th style={{ ...th, width: 22 }}>BTL</th>
           </tr></thead>
           <tbody>
-            {data[part].map((row, i) => (
+            {data[part].filter(r => !r._sep).map((row, i) => (
               <tr key={i}>
                 <td style={{ ...td, textAlign: "center", width: 18 }}>{row.qn}</td>
                 <td style={td}>{row.question}</td>
@@ -284,6 +299,20 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
             ))}
           </tbody>
         </table>
+        {/* separator rows rendered below table in readOnly */}
+        {(() => {
+          let qIdx = -1;
+          return data[part].map((row, i) => {
+            if (!row._sep) { qIdx++; return null; }
+            return (
+              <div key={i} className="sep-row" style={{ margin: "3px 0" }}>
+                <div className="sep-line" />
+                <span className="sep-label">{row.label || "OR"}</span>
+                <div className="sep-line" />
+              </div>
+            );
+          });
+        })()}
       </div>
     );
 
@@ -302,39 +331,67 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
             <th style={{ ...th, width: 22 }}>BTL</th>
           </tr></thead>
         </table>
-        {/* rows — delete button sits OUTSIDE the table */}
-        {data[part].map((row, i) => (
-          <div key={row.qn + "-" + i} style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 0 }}>
-            <table style={{ ...tbl, margin: 0 }}>
-              <tbody>
-                <tr>
-                  <td style={{ ...td, textAlign: "center", width: 18 }}>
-                    {f(`${part}.${i}.qn`, row.qn)}
-                  </td>
-                  <td style={td}>
-                    {f(`${part}.${i}.question`, row.question, true)}
-                  </td>
-                  <td style={tdn}>{f(`${part}.${i}.co`, row.co)}</td>
-                  <td style={tdn}>{f(`${part}.${i}.btl`, row.btl)}</td>
-                </tr>
-              </tbody>
-            </table>
-            {editMode && (
-              <button
-                onClick={() => onRemoveRow(part, i)}
-                title="Remove row"
-                style={{
-                  flexShrink: 0, width: 18, height: 18, borderRadius: "50%",
-                  background: "rgba(200,30,30,0.1)", border: "1px solid rgba(200,30,30,0.3)",
-                  color: "#c02020", fontSize: "13px", lineHeight: 1, cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(200,30,30,0.22)"}
-                onMouseLeave={e => e.currentTarget.style.background = "rgba(200,30,30,0.1)"}
-              >×</button>
-            )}
-          </div>
-        ))}
+        {/* rows + separators */}
+        {data[part].map((row, i) => {
+          if (row._sep) {
+            return (
+              <div key={"sep-" + i} className="sep-row">
+                <div className="sep-line" />
+                {editMode
+                  ? <input className="sep-input" value={row.label || "OR"}
+                      onChange={e => onUpdateSep(part, i, e.target.value)} />
+                  : <span className="sep-label">{row.label || "OR"}</span>
+                }
+                <div className="sep-line" />
+                {editMode && (
+                  <button className="sep-del" onClick={() => onRemoveRow(part, i)} title="Remove separator">✕</button>
+                )}
+              </div>
+            );
+          }
+          return (
+            <div key={row.qn + "-" + i}>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 0 }}>
+                <table style={{ ...tbl, margin: 0 }}>
+                  <tbody>
+                    <tr>
+                      <td style={{ ...td, textAlign: "center", width: 18 }}>
+                        {f(`${part}.${i}.qn`, row.qn)}
+                      </td>
+                      <td style={td}>
+                        {f(`${part}.${i}.question`, row.question, true)}
+                      </td>
+                      <td style={tdn}>{f(`${part}.${i}.co`, row.co)}</td>
+                      <td style={tdn}>{f(`${part}.${i}.btl`, row.btl)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                {editMode && (
+                  <button
+                    onClick={() => onRemoveRow(part, i)}
+                    title="Remove row"
+                    style={{
+                      flexShrink: 0, width: 18, height: 18, borderRadius: "50%",
+                      background: "rgba(200,30,30,0.1)", border: "1px solid rgba(200,30,30,0.3)",
+                      color: "#c02020", fontSize: "13px", lineHeight: 1, cursor: "pointer",
+                      display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(200,30,30,0.22)"}
+                    onMouseLeave={e => e.currentTarget.style.background = "rgba(200,30,30,0.1)"}
+                  >×</button>
+                )}
+              </div>
+              {editMode && (
+                <button className="add-sep-btn" onClick={() => onAddSep(part, i)} style={{
+                  display: "block", width: "calc(100% - 22px)", marginTop: 1, marginBottom: 0,
+                  background: "transparent", border: "1px dashed rgba(100,100,200,0.3)",
+                  color: "rgba(80,80,180,0.7)", borderRadius: 2, cursor: "pointer", fontSize: "7.5px",
+                  padding: "1px 0", fontFamily: "'Times New Roman', serif", textAlign: "center",
+                }}>+ separator</button>
+              )}
+            </div>
+          );
+        })}
         {editMode && (
           <button onClick={() => onAddRow(part)} style={{
             display: "block", width: "calc(100% - 22px)", marginTop: 2, marginBottom: 4,
@@ -381,6 +438,7 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
 function EditorPage({ initialData, onBack }) {
   const [data, setData] = useState(initialData);
   const [editMode, setEditMode] = useState(true);
+  const [dupMode, setDupMode] = useState(false); // duplicate: print two copies side by side
 
   const updateField = (path, value) => {
     setData(prev => {
@@ -407,12 +465,31 @@ function EditorPage({ initialData, onBack }) {
     return next;
   });
 
+  const addSeparator = (part, afterIndex) => setData(prev => {
+    const next = JSON.parse(JSON.stringify(prev));
+    next[part].splice(afterIndex + 1, 0, { _sep: true, label: "OR" });
+    return next;
+  });
+
+  const updateSepLabel = (part, i, label) => setData(prev => {
+    const next = JSON.parse(JSON.stringify(prev));
+    next[part][i].label = label;
+    return next;
+  });
+
   const handlePrint = () => {
     setEditMode(false);
-    setTimeout(() => { window.print(); setTimeout(() => setEditMode(true), 600); }, 120);
+    if (dupMode) document.body.classList.add("dup-print");
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        setEditMode(true);
+        document.body.classList.remove("dup-print");
+      }, 600);
+    }, 120);
   };
 
-  const shared = { data, onUpdate: updateField, editMode, onAddRow: addRow, onRemoveRow: removeRow };
+  const shared = { data, onUpdate: updateField, editMode, onAddRow: addRow, onRemoveRow: removeRow, onAddSep: addSeparator, onUpdateSep: updateSepLabel };
 
   return (
     <>
@@ -427,6 +504,7 @@ function EditorPage({ initialData, onBack }) {
         >
           {editMode ? "● Editing" : "○ Preview"}
         </button>
+        <button className={`g-btn g-btn-ghost ${dupMode ? "on" : ""}`} onClick={() => setDupMode(d => !d)} title="Print two copies side by side on one sheet">⧉ Duplicate</button>
         <button className="g-btn g-btn-yellow" onClick={handlePrint}>↓ Print / PDF</button>
       </div>
 
@@ -457,6 +535,20 @@ function EditorPage({ initialData, onBack }) {
               <PaperBody readOnly={true} editMode={false} data={data} />
             </div>
           </div>
+
+          {/* DUPLICATE COPY — only shown when dupMode on */}
+          {dupMode && <>
+            <div className="pdiv dup-copy" style={{ display:"flex" }} />
+            <div className="phalf dup-copy" style={{ display:"flex", flexDirection:"column" }}>
+              <div className="phalf-label lbl-preview" style={{ background:"#d4ecd4", color:"#2a5a2a" }}>
+                <span className="lbl-dot" style={{ background:"#2a5a2a" }} />
+                ⧉ Duplicate copy — prints on same sheet
+              </div>
+              <div className="phalf-body">
+                <PaperBody readOnly={true} editMode={false} data={data} />
+              </div>
+            </div>
+          </>}
 
         </div>
       </div>
