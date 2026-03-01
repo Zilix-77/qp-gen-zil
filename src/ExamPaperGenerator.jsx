@@ -126,7 +126,7 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
   .ecanvas { padding:0; background:white!important; min-height:unset; }
   .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:8mm; }
   /* hide editable side and divider, only print preview */
-  .phalf.ed { display:none!important; }
+  .edit-panel { display:none!important; }
   .pdiv { display:none!important; }
   .phalf { border-color:#999!important; overflow:visible!important; flex:1; }
   .phalf-body { overflow:visible!important; }
@@ -429,7 +429,7 @@ function EditorPage({ initialData, onBack }) {
         <div className="psheet">
 
           {/* LEFT — EDITABLE */}
-          <div className={`phalf ${editMode ? "ed" : ""}`}>
+          <div className={`phalf edit-panel ${editMode ? "ed" : ""}`}>
             <div className="phalf-label lbl-edit">
               <span className="lbl-dot" />
               ✏ Editable — click any field to edit
