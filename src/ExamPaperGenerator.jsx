@@ -238,7 +238,7 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
   // Called as f() not <F/> to prevent React unmounting input on every keystroke
   const f = (path, value, multiline = false) =>
     readOnly
-      ? <span>{value}</span>
+      ? <span style={{ whiteSpace: "pre-wrap" }}>{value}</span>
       : <ECell value={value} onChange={v => upd(path, v)} multiline={multiline} />;
 
   const th = { border: "1px solid #000", padding: "2px 4px", fontWeight: "bold", fontSize: "8.5px", background: "#ebebeb", whiteSpace: "nowrap" };
