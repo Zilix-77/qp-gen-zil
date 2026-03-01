@@ -118,6 +118,30 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 }
 .phalf input, .phalf textarea { color:#000!important; }
 
+/* print dialog */
+.pdlg-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:999; display:flex; align-items:center; justify-content:center; }
+.pdlg { background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:32px 36px; width:360px; font-family:'Inconsolata',monospace; }
+.pdlg-title { font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#f0ede8; margin-bottom:6px; }
+.pdlg-sub { font-size:10px; color:rgba(240,237,232,0.35); margin-bottom:28px; letter-spacing:0.5px; }
+.pdlg-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+.pdlg-row-label { font-size:11px; color:rgba(240,237,232,0.7); letter-spacing:0.5px; }
+.pdlg-row-desc { font-size:9px; color:rgba(240,237,232,0.3); margin-top:2px; }
+.toggle-wrap { display:flex; align-items:center; gap:8px; }
+.toggle { position:relative; width:40px; height:22px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:#333; border-radius:22px; cursor:pointer; transition:background 0.2s; }
+.toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:white; border-radius:50%; transition:transform 0.2s; }
+.toggle input:checked + .toggle-slider { background:#e8d85a; }
+.toggle input:checked + .toggle-slider::before { transform:translateX(18px); }
+.orient-btns { display:flex; gap:6px; }
+.orient-btn { font-family:'Inconsolata',monospace; font-size:10px; padding:5px 12px; border-radius:3px; border:1px solid rgba(255,255,255,0.12); background:transparent; color:rgba(240,237,232,0.4); cursor:pointer; transition:all 0.12s; display:flex; align-items:center; gap:5px; }
+.orient-btn.active { background:rgba(232,216,90,0.1); border-color:rgba(232,216,90,0.5); color:#e8d85a; }
+.pdlg-actions { display:flex; gap:10px; margin-top:28px; }
+.pdlg-cancel { flex:1; padding:11px; background:transparent; border:1px solid rgba(255,255,255,0.1); border-radius:3px; font-family:'Inconsolata',monospace; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(240,237,232,0.4); cursor:pointer; transition:all 0.12s; }
+.pdlg-cancel:hover { color:#f0ede8; border-color:rgba(255,255,255,0.3); }
+.pdlg-confirm { flex:2; padding:11px; background:#e8d85a; border:none; border-radius:3px; font-family:'Inconsolata',monospace; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#0e0e0e; cursor:pointer; transition:background 0.12s; }
+.pdlg-confirm:hover { background:#f0e870; }
+
 /* separator row */
 .sep-row { display:flex; align-items:center; gap:6px; margin:2px 0; }
 .sep-line { flex:1; height:1px; background:#bbb; }
@@ -128,32 +152,60 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 /* print */
 @media print {
   body { background:white!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .g-tb, .layout-strip { display:none!important; }
+  .g-tb, .layout-strip, .pdlg-overlay { display:none!important; }
   .phalf-label { display:none!important; }
   .ecanvas { padding:0; background:white!important; min-height:unset; display:block; }
   .edit-panel { display:none!important; }
   .sep-del, .add-sep-btn { display:none!important; }
   button { display:none!important; }
 
-  /* NORMAL print — single preview, portrait */
-  body:not(.dup-print) .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
-  body:not(.dup-print) .pdiv { display:none!important; }
-  body:not(.dup-print) .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 12mm; }
-  body:not(.dup-print) .phalf-body { overflow:visible!important; }
-  body:not(.dup-print) .phalf-body > div { font-size:13pt!important; line-height:1.5!important; }
-  body:not(.dup-print) .phalf-body table { font-size:12pt!important; width:100%!important; }
-  body:not(.dup-print) .phalf-body th { font-size:11pt!important; padding:4pt 6pt!important; }
-  body:not(.dup-print) .phalf-body td { font-size:11pt!important; padding:4pt 6pt!important; }
-  body:not(.dup-print) .phalf-body input, body:not(.dup-print) .phalf-body textarea, body:not(.dup-print) .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
-  body:not(.dup-print) @page { size:A4 portrait; margin:10mm; }
+  /* ── SINGLE PORTRAIT (default) ── */
+  body.print-single-portrait .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
+  body.print-single-portrait .pdiv, body.print-single-portrait .dup-copy { display:none!important; }
+  body.print-single-portrait .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 14mm; }
+  body.print-single-portrait .phalf-body { overflow:visible!important; }
+  body.print-single-portrait .phalf-body > div { font-size:13pt!important; line-height:1.6!important; }
+  body.print-single-portrait .phalf-body table { font-size:12pt!important; width:100%!important; }
+  body.print-single-portrait .phalf-body th { font-size:11pt!important; padding:5pt 7pt!important; }
+  body.print-single-portrait .phalf-body td { font-size:11pt!important; padding:5pt 7pt!important; }
+  body.print-single-portrait .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
 
-  /* DUPLICATE print — two copies side by side, landscape */
-  body.dup-print .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:4mm; display:flex; flex-direction:row; }
-  body.dup-print .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
-  body.dup-print .phalf { border:1px solid #999!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:3mm; }
-  body.dup-print .phalf-body { overflow:visible!important; }
-  body.dup-print .dup-copy { display:flex!important; }
-  @page { size:A4 landscape; margin:5mm; }
+  /* ── SINGLE LANDSCAPE ── */
+  body.print-single-landscape .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
+  body.print-single-landscape .pdiv, body.print-single-landscape .dup-copy { display:none!important; }
+  body.print-single-landscape .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:8mm 14mm; }
+  body.print-single-landscape .phalf-body { overflow:visible!important; }
+  body.print-single-landscape .phalf-body > div { font-size:12pt!important; line-height:1.5!important; }
+  body.print-single-landscape .phalf-body table { font-size:11pt!important; width:100%!important; }
+  body.print-single-landscape .phalf-body th { font-size:10pt!important; padding:4pt 6pt!important; }
+  body.print-single-landscape .phalf-body td { font-size:10pt!important; padding:4pt 6pt!important; }
+  body.print-single-landscape .phalf-body span { font-size:10pt!important; font-family:'Times New Roman',serif!important; }
+
+  /* ── DUPLICATE PORTRAIT — two half-page columns on A4 portrait ── */
+  body.print-dup-portrait .psheet { box-shadow:none; border-radius:0; width:100%; min-height:297mm; gap:0; padding:5mm; display:flex; flex-direction:row; }
+  body.print-dup-portrait .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
+  body.print-dup-portrait .dup-copy { display:flex!important; }
+  body.print-dup-portrait .phalf { border:1px solid #ccc!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:3mm; }
+  body.print-dup-portrait .phalf-body { overflow:visible!important; }
+  body.print-dup-portrait .phalf-body > div { font-size:7pt!important; line-height:1.4!important; }
+  body.print-dup-portrait .phalf-body table { font-size:6.5pt!important; width:100%!important; }
+  body.print-dup-portrait .phalf-body th { font-size:6pt!important; padding:2pt 3pt!important; }
+  body.print-dup-portrait .phalf-body td { font-size:6pt!important; padding:2pt 3pt!important; }
+  body.print-dup-portrait .phalf-body span { font-size:6pt!important; font-family:'Times New Roman',serif!important; }
+
+  /* ── DUPLICATE LANDSCAPE — two copies on A4 landscape ── */
+  body.print-dup-landscape .psheet { box-shadow:none; border-radius:0; width:100%; min-height:210mm; gap:0; padding:5mm; display:flex; flex-direction:row; }
+  body.print-dup-landscape .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
+  body.print-dup-landscape .dup-copy { display:flex!important; }
+  body.print-dup-landscape .phalf { border:1px solid #ccc!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:4mm; }
+  body.print-dup-landscape .phalf-body { overflow:visible!important; }
+  body.print-dup-landscape .phalf-body > div { font-size:9pt!important; line-height:1.4!important; }
+  body.print-dup-landscape .phalf-body table { font-size:8.5pt!important; width:100%!important; }
+  body.print-dup-landscape .phalf-body th { font-size:8pt!important; padding:3pt 4pt!important; }
+  body.print-dup-landscape .phalf-body td { font-size:8pt!important; padding:3pt 4pt!important; }
+  body.print-dup-landscape .phalf-body span { font-size:8pt!important; font-family:'Times New Roman',serif!important; }
+
+  @page { size:A4; margin:0; }
 }
 `;
 
@@ -433,12 +485,71 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
   );
 }
 
+/* ─── PRINT DIALOG ───────────────────────────────────────────────────────────── */
+
+function PrintDialog({ onConfirm, onCancel }) {
+  const [dup, setDup] = useState(false);
+  const [orient, setOrient] = useState("portrait");
+
+  return (
+    <div className="pdlg-overlay" onClick={onCancel}>
+      <div className="pdlg" onClick={e => e.stopPropagation()}>
+        <div className="pdlg-title">Print / Save PDF</div>
+        <div className="pdlg-sub">Choose options before printing</div>
+
+        {/* Duplicate toggle */}
+        <div className="pdlg-row">
+          <div>
+            <div className="pdlg-row-label">⧉ Duplicate copies</div>
+            <div className="pdlg-row-desc">Print two copies side by side on one sheet</div>
+          </div>
+          <label className="toggle">
+            <input type="checkbox" checked={dup} onChange={e => setDup(e.target.checked)} />
+            <span className="toggle-slider" />
+          </label>
+        </div>
+
+        {/* Orientation */}
+        <div className="pdlg-row">
+          <div>
+            <div className="pdlg-row-label">↕ Orientation</div>
+            <div className="pdlg-row-desc">Portrait = tall · Landscape = wide</div>
+          </div>
+          <div className="orient-btns">
+            <button className={`orient-btn ${orient === "portrait" ? "active" : ""}`} onClick={() => setOrient("portrait")}>
+              <span style={{ fontSize:14 }}>▯</span> Portrait
+            </button>
+            <button className={`orient-btn ${orient === "landscape" ? "active" : ""}`} onClick={() => setOrient("landscape")}>
+              <span style={{ fontSize:14 }}>▭</span> Landscape
+            </button>
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:3, padding:"10px 14px", fontSize:10, color:"rgba(240,237,232,0.5)", fontFamily:"Inconsolata,monospace", letterSpacing:"0.5px" }}>
+          Will print: <span style={{ color:"#e8d85a" }}>
+            {dup ? "2 copies" : "1 copy"} · A4 {orient} · {dup ? (orient === "landscape" ? "side by side" : "two columns") : "full page"}
+          </span>
+        </div>
+
+        <div className="pdlg-actions">
+          <button className="pdlg-cancel" onClick={onCancel}>Cancel</button>
+          <button className="pdlg-confirm" onClick={() => onConfirm(dup, orient)}>Print / Save PDF →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── EDITOR PAGE ────────────────────────────────────────────────────────────── */
 
 function EditorPage({ initialData, onBack }) {
   const [data, setData] = useState(initialData);
   const [editMode, setEditMode] = useState(true);
-  const [dupMode, setDupMode] = useState(false); // duplicate: print two copies side by side
+  const [dupMode, setDupMode] = useState(false);
+  const [showPrintDlg, setShowPrintDlg] = useState(false);
+  const [printDup, setPrintDup] = useState(false);
+  const [printOrient, setPrintOrient] = useState("portrait"); // "portrait" | "landscape"
 
   const updateField = (path, value) => {
     setData(prev => {
@@ -477,22 +588,40 @@ function EditorPage({ initialData, onBack }) {
     return next;
   });
 
-  const handlePrint = () => {
+  const executePrint = (dup, orient) => {
+    setShowPrintDlg(false);
+    setDupMode(dup);
     setEditMode(false);
-    if (dupMode) document.body.classList.add("dup-print");
+    const cls = dup ? `print-dup-${orient}` : `print-single-${orient}`;
+    // set @page size via a temporary style tag
+    const styleId = "epg-page-size";
+    let st = document.getElementById(styleId);
+    if (!st) { st = document.createElement("style"); st.id = styleId; document.head.appendChild(st); }
+    st.textContent = `@page { size: A4 ${orient}; margin: 0; }`;
+    document.body.classList.add(cls);
     setTimeout(() => {
       window.print();
       setTimeout(() => {
         setEditMode(true);
-        document.body.classList.remove("dup-print");
+        document.body.classList.remove(cls);
       }, 600);
-    }, 120);
+    }, 150);
   };
+
+  const handlePrint = () => setShowPrintDlg(true);
 
   const shared = { data, onUpdate: updateField, editMode, onAddRow: addRow, onRemoveRow: removeRow, onAddSep: addSeparator, onUpdateSep: updateSepLabel };
 
   return (
     <>
+      {/* PRINT DIALOG */}
+      {showPrintDlg && (
+        <PrintDialog
+          onConfirm={(dup, orient) => executePrint(dup, orient)}
+          onCancel={() => setShowPrintDlg(false)}
+        />
+      )}
+
       {/* TOOLBAR */}
       <div className="g-tb">
         <button className="g-btn g-btn-ghost" onClick={onBack}>← Back</button>
@@ -504,7 +633,6 @@ function EditorPage({ initialData, onBack }) {
         >
           {editMode ? "● Editing" : "○ Preview"}
         </button>
-        <button className={`g-btn g-btn-ghost ${dupMode ? "on" : ""}`} onClick={() => setDupMode(d => !d)} title="Print two copies side by side on one sheet">⧉ Duplicate</button>
         <button className="g-btn g-btn-yellow" onClick={handlePrint}>↓ Print / PDF</button>
       </div>
 
@@ -536,19 +664,17 @@ function EditorPage({ initialData, onBack }) {
             </div>
           </div>
 
-          {/* DUPLICATE COPY — only shown when dupMode on */}
-          {dupMode && <>
-            <div className="pdiv dup-copy" style={{ display:"flex" }} />
-            <div className="phalf dup-copy" style={{ display:"flex", flexDirection:"column" }}>
-              <div className="phalf-label lbl-preview" style={{ background:"#d4ecd4", color:"#2a5a2a" }}>
-                <span className="lbl-dot" style={{ background:"#2a5a2a" }} />
-                ⧉ Duplicate copy — prints on same sheet
-              </div>
-              <div className="phalf-body">
-                <PaperBody readOnly={true} editMode={false} data={data} />
-              </div>
+          {/* DUPLICATE COPY — hidden on screen, shown during dup print via CSS */}
+          <div className="pdiv dup-copy" style={{ display:"none" }} />
+          <div className="phalf dup-copy" style={{ display:"none", flexDirection:"column" }}>
+            <div className="phalf-label lbl-preview" style={{ background:"#d4ecd4", color:"#2a5a2a" }}>
+              <span className="lbl-dot" style={{ background:"#2a5a2a" }} />
+              ⧉ Duplicate copy
             </div>
-          </>}
+            <div className="phalf-body">
+              <PaperBody readOnly={true} editMode={false} data={data} />
+            </div>
+          </div>
 
         </div>
       </div>
