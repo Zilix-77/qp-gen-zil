@@ -336,37 +336,38 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
         <div style={{ fontSize: "8px", textAlign: "center", marginBottom: 1, fontStyle: "italic" }}>
           {f(noteKey, data[noteKey])}
         </div>
-        {/* header */}
-        <table style={{ ...tbl, marginTop: 2, marginBottom: 0 }}>
+        {/* single table — separators are inline <tr> rows so borders stay connected */}
+        <table style={{ ...tbl, marginTop: 2, marginBottom: 2 }}>
           <thead><tr>
             <th style={{ ...th, width: 18 }}>Qn</th>
             <th style={th}>Question</th>
             <th style={{ ...th, width: 26 }}>CO</th>
             <th style={{ ...th, width: 22 }}>BTL</th>
           </tr></thead>
-        </table>
-        {/* rows and separators in order */}
-        {data[part].map((row, i) => {
-          if (row._sep) return (
-            <div key={"sep-" + i} className="sep-row" style={{ margin: "3px 0" }}>
-              <div className="sep-line" />
-              <span className="sep-label">{row.label || "OR"}</span>
-              <div className="sep-line" />
-            </div>
-          );
-          return (
-            <table key={i} style={{ ...tbl, margin: 0 }}>
-              <tbody>
-                <tr>
+          <tbody>
+            {data[part].map((row, i) => {
+              if (row._sep) return (
+                <tr key={"sep-" + i}>
+                  <td colSpan={4} style={{ border: "1px solid #000", padding: "2px 6px" }}>
+                    <div className="sep-row" style={{ margin: 0 }}>
+                      <div className="sep-line" />
+                      <span className="sep-label">{row.label || "OR"}</span>
+                      <div className="sep-line" />
+                    </div>
+                  </td>
+                </tr>
+              );
+              return (
+                <tr key={i}>
                   <td style={{ ...td, textAlign: "center", width: 18 }}>{row.qn}</td>
                   <td style={td}><span style={{ whiteSpace: "pre-wrap" }}>{row.question}</span></td>
                   <td style={tdn}>{row.co}</td>
                   <td style={tdn}>{row.btl}</td>
                 </tr>
-              </tbody>
-            </table>
-          );
-        })}
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     );
 
