@@ -76,9 +76,9 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 .fg { margin-bottom:17px; position:relative; }
 .fg-label { display:block; font-family:'Inconsolata',monospace; font-size:9.5px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(245,242,236,0.45); margin-bottom:7px; }
 .fg-label sup { color:#e8d85a; }
-.fg-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:12px 15px; font-family:'Inconsolata',monospace; font-size:13px; color:#f5f2ec; outline:none; transition:border-color 0.14s,background 0.14s; }
+.fg-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:12px 15px; font-family:'Inconsolata',monospace; font-size:13px; color:#ffffff; outline:none; transition:border-color 0.14s,background 0.14s; caret-color:#e8d85a; }
 .fg-input::placeholder { color:rgba(245,242,236,0.2); }
-.fg-input:focus { border-color:rgba(232,216,90,0.55); background:rgba(232,216,90,0.04); }
+.fg-input:focus { border-color:rgba(232,216,90,0.55); background:rgba(232,216,90,0.04); color:#ffffff; }
 .sugg { position:absolute; top:100%; left:0; right:0; background:#1a1a1a; border:1px solid rgba(255,255,255,0.1); border-top:none; border-radius:0 0 3px 3px; z-index:60; }
 .si { padding:9px 15px; font-family:'Inconsolata',monospace; font-size:12px; color:rgba(245,242,236,0.6); cursor:pointer; transition:background 0.1s,color 0.1s; }
 .si:hover { background:rgba(232,216,90,0.07); color:#e8d85a; }
@@ -226,7 +226,7 @@ function ECell({ value, onChange, multiline }) {
   };
   if (multiline)
     return <textarea value={value} onChange={e => onChange(e.target.value)}
-      style={{ ...base, resize: "vertical", minHeight: "44px", lineHeight: "1.4" }} />;
+      style={{ ...base, resize: "vertical", minHeight: "32px", lineHeight: "1.4" }} />;
   return <input value={value} onChange={e => onChange(e.target.value)}
     style={{ ...base, textAlign: "inherit" }} />;
 }
@@ -235,7 +235,8 @@ function ECell({ value, onChange, multiline }) {
 
 function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }) {
   const upd = (p, v) => { if (!readOnly && onUpdate) onUpdate(p, v); };
-  const F = ({ path, value, multiline }) =>
+  // Called as f() not <F/> to prevent React unmounting input on every keystroke
+  const f = (path, value, multiline = false) =>
     readOnly
       ? <span>{value}</span>
       : <ECell value={value} onChange={v => upd(path, v)} multiline={multiline} />;
@@ -252,11 +253,11 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
     const noteKey = partNoteKey[part];
     if (readOnly) return (
       <div key={part}>
-        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "9.5px", marginTop: 5 }}>{partLabel[part]}</div>
-        <div style={{ fontSize: "8px", textAlign: "center", marginBottom: 2, fontStyle: "italic" }}>
-          <F path={noteKey} value={data[noteKey]} />
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "9.5px", marginTop: 2 }}>{partLabel[part]}</div>
+        <div style={{ fontSize: "8px", textAlign: "center", marginBottom: 1, fontStyle: "italic" }}>
+          {f(noteKey, data[noteKey])}
         </div>
-        <table style={{ ...tbl, marginTop: 3, marginBottom: 3 }}>
+        <table style={{ ...tbl, marginTop: 2, marginBottom: 2 }}>
           <thead><tr>
             <th style={{ ...th, width: 18 }}>Qn</th>
             <th style={th}>Question</th>
@@ -279,9 +280,9 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
 
     return (
       <div key={part}>
-        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "9.5px", marginTop: 5 }}>{partLabel[part]}</div>
-        <div style={{ fontSize: "8px", textAlign: "center", marginBottom: 2, fontStyle: "italic" }}>
-          <F path={noteKey} value={data[noteKey]} />
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "9.5px", marginTop: 2 }}>{partLabel[part]}</div>
+        <div style={{ fontSize: "8px", textAlign: "center", marginBottom: 1, fontStyle: "italic" }}>
+          {f(noteKey, data[noteKey])}
         </div>
         {/* header */}
         <table style={{ ...tbl, marginBottom: 0 }}>
@@ -294,18 +295,18 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
         </table>
         {/* rows — delete button sits OUTSIDE the table */}
         {data[part].map((row, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 1 }}>
+          <div key={row.qn + "-" + i} style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 0 }}>
             <table style={{ ...tbl, margin: 0 }}>
               <tbody>
                 <tr>
                   <td style={{ ...td, textAlign: "center", width: 18 }}>
-                    <F path={`${part}.${i}.qn`} value={row.qn} />
+                    {f(`${part}.${i}.qn`, row.qn)}
                   </td>
                   <td style={td}>
-                    <F path={`${part}.${i}.question`} value={row.question} multiline />
+                    {f(`${part}.${i}.question`, row.question, true)}
                   </td>
-                  <td style={tdn}><F path={`${part}.${i}.co`} value={row.co} /></td>
-                  <td style={tdn}><F path={`${part}.${i}.btl`} value={row.btl} /></td>
+                  <td style={tdn}>{f(`${part}.${i}.co`, row.co)}</td>
+                  <td style={tdn}>{f(`${part}.${i}.btl`, row.btl)}</td>
                 </tr>
               </tbody>
             </table>
@@ -340,23 +341,23 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow }
   return (
     <div style={{ fontFamily: "'Times New Roman', serif", fontSize: "9px", lineHeight: "1.3", color: "#000" }}>
       {/* header info */}
-      <div style={{ fontWeight: "bold", fontSize: "9px" }}><F path="code" value={data.code} /></div>
+      <div style={{ fontWeight: "bold", fontSize: "9px" }}>{f("code", data.code)}</div>
       <div style={{ display: "flex", gap: 8, fontSize: "8.5px", marginTop: 1 }}>
         <span>Roll No :....................</span>
         <span style={{ flex: 1 }}>Signature:..................................</span>
       </div>
       <div style={{ fontSize: "8.5px" }}>Class :.....................</div>
       <div style={{ textAlign: "center", margin: "4px 0 3px" }}>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}><F path="semester" value={data.semester} /></div>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}><F path="examType" value={data.examType} /></div>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}><F path="month" value={data.month} /></div>
-        <div style={{ fontSize: "8.5px", marginTop: 1 }}><F path="department" value={data.department} /></div>
+        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("semester", data.semester)}</div>
+        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("examType", data.examType)}</div>
+        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("month", data.month)}</div>
+        <div style={{ fontSize: "8.5px", marginTop: 1 }}>{f("department", data.department)}</div>
         <div style={{ fontWeight: "bold", fontSize: "10px", textTransform: "uppercase", marginTop: 1 }}>
-          <F path="subject" value={data.subject} />
+          {f("subject", data.subject)}
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8.5px", marginTop: 2 }}>
-          <span>(Time: <F path="time" value={data.time} />)</span>
-          <span>(Maximum Marks: <F path="maxMarks" value={data.maxMarks} />)</span>
+          <span>(Time: {f("time", data.time)})</span>
+          <span>(Maximum Marks: {f("maxMarks", data.maxMarks)})</span>
         </div>
       </div>
       {renderPart("partA")}
