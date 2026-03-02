@@ -1,107 +1,62 @@
-# 📄 Exam Paper Generator
+# 📄 Exam Question Paper Generator
 
-A fast, browser-based exam question paper builder. Type your subject, fill in questions, and print a clean A4 PDF — no Word, no formatting headaches.
-
-Built with **React + Vite**. Deployable to Vercel in one push.
+A browser-based tool to create, edit, and print diploma exam question papers in the standard format used by polytechnic and engineering institutions.
 
 ---
 
-## 🚀 Getting Started
+## 📌 Description
 
-### 1. Install dependencies
-```bash
-npm install
-```
+This tool lets you generate a fully formatted exam question paper — exactly matching the official layout with **Part A**, **Part B**, and **Part C** sections, CO/BTL columns, and the double-copy side-by-side format used for printing on a single A4 sheet.
 
-### 2. Run locally
-```bash
-npm run dev
-```
-Opens at `http://localhost:5173`
-
-### 3. Build for production
-```bash
-npm run build
-```
+No installations. No backend. Just open and use.
 
 ---
 
-## 📁 Project Structure
+## 🚀 Use Cases
 
-```
-your-project/
-├── index.html                  # Vite entry HTML
-├── package.json
-├── vite.config.js
-└── src/
-    ├── main.jsx                # React root mount
-    ├── App.jsx                 # App entry — renders ExamPaperGenerator
-    └── ExamPaperGenerator.jsx  # Full app (home + editor + print)
-```
+- **Teachers & Lecturers** — Quickly draft and finalize question papers without touching Word or LaTeX
+- **Exam Coordinators** — Generate print-ready PDFs in the exact institutional format
+- **Students** — Create mock papers for practice or study groups
+- **Departments** — Standardize question paper formatting across subjects
 
 ---
 
 ## ✨ Features
 
-- **Home page** — enter subject, department, paper code. Subject autocompletes from 12 common subjects and auto-fills the paper
-- **Live dual-panel editor** — left panel is editable, right panel is a live preview mirror
-- **Edit / Preview toggle** — switch between editing and clean preview mode
-- **Add / Remove rows** — add or delete question rows per part (A, B, C)
-- **Separators** — insert an OR divider (or any custom label) between questions within a part
-- **Print dialog** — choose duplicate copies and orientation before printing
-- **Duplicate mode** — prints two identical copies side by side on one A4 sheet (cut to save paper)
-- **Orientation** — portrait or landscape print
-- **Newline support** — pressing Enter in a question preserves line breaks in the preview
-- **A4 default** — all print modes default to standard A4 paper size
+- Edit every field inline — subject, department, exam code, date, questions, CO, BTL
+- Add or remove rows in any section (Part A / B / C)
+- Live mirror — right side updates as you type on the left
+- One-click PDF download via browser print
+- Pre-filled with sample DBMS paper to get started instantly
 
 ---
 
-## 🖨️ Printing / Saving as PDF
+## 🛠 How to Run
 
-1. Click **↓ Print / PDF** in the toolbar
-2. Choose options in the dialog:
-   - **Duplicate copies** — on = two copies on one sheet
-   - **Orientation** — Portrait ▯ or Landscape ▭
-3. Click **Print / Save PDF →**
-4. In your browser's print dialog, set **Destination** to **Save as PDF**
+**Option 1 — Claude Artifact (no setup)**
+Paste the `.jsx` file into a Claude chat and ask it to run as an artifact.
 
-Only the **Preview panel** prints — the editable side is hidden automatically.
-
----
-
-## 🌐 Deploy to Vercel
-
+**Option 2 — Local (Vite + React)**
 ```bash
-git add .
-git commit -m "initial commit"
-git push origin main
+npm create vite@latest exam-paper -- --template react
+cd exam-paper
+npm install
+# Replace src/App.jsx with the provided .jsx file
+npm run dev
 ```
 
-Connect your GitHub repo on [vercel.com](https://vercel.com) — Vite is auto-detected, no configuration needed.
-
-### Test on a branch before going live
-```bash
-git checkout -b test-feature
-git push origin test-feature
-```
-Vercel creates a preview URL automatically for every branch.
+**Option 3 — CodeSandbox**
+Go to [codesandbox.io](https://codesandbox.io), create a React sandbox, paste the code.
 
 ---
 
-## 🛠️ Tech Stack
+## 📁 Files
 
-| Tool | Purpose |
-|------|---------|
-| React 18 | UI framework |
-| Vite 5 | Build tool & dev server |
-| Vanilla CSS (injected) | All styles — no CSS framework |
-| Google Fonts | Playfair Display + Inconsolata |
-| `window.print()` | Browser-native PDF generation |
+| File | Description |
+|------|-------------|
+| `exam-paper-generator.jsx` | Main React component |
+| `README.md` | This file |
 
 ---
 
-## 📝 Notes
-
-- No backend, no database — everything runs in the browser
-- Paper data is not saved between sessions (refresh = reset)
-- `node_modules/` is gitignored — never pushed to GitHub
+<!--check out for more https://github.com/Zilix-77 -->
