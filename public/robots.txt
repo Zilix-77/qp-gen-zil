@@ -1,0 +1,8 @@
+# Robots.txt for Question Paper Generator
+# https://qp-gen-zil.vercel.app
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://qp-gen-zil.vercel.app/sitemap.xml
