@@ -40,6 +40,11 @@ const makeDefaultData = (subject = "", department = "", code = "") => ({
   partC: [
     { qn: "4", question: "Explain in detail any one major topic from " + (subject || "this subject") + ".", co: "CO1", btl: "U" },
   ],
+  headerAlign: "left",
+  headerSpacing: 1,
+  rollNoLineRaw: "Roll No :....................",
+  sigLineRaw: "Signature:..................................",
+  classLineRaw: "Class :.....................",
 });
 
 /* ─── GLOBAL STYLES ──────────────────────────────────────────────────────────── */
@@ -148,6 +153,31 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 .sep-label { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#555; white-space:nowrap; }
 .sep-input { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#333; background:transparent; border:none; border-bottom:1px dashed #aaa; outline:none; width:80px; text-align:center; padding:0 2px; }
 .sep-del { background:none; border:none; color:#c02020; font-size:11px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; }
+
+/* header control popup */
+.h-ctrl {
+  position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
+  background: #1c1c1c; border: 1px solid #e8d85a; padding: 6px 12px;
+  border-radius: 4px; display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100;
+}
+.h-ctrl-label { font-family:'Inconsolata',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; margin-right:-4px; }
+.h-ctrl-btn {
+  background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff;
+  font-family:'Inconsolata',monospace; font-size:9px; padding:3px 8px; cursor:pointer;
+  border-radius:2px; transition: all 0.1s;
+}
+.h-ctrl-btn:hover { border-color:rgba(255,255,255,0.3); }
+.h-ctrl-btn.active { color:#e8d85a; border-color:#e8d85a; background:rgba(232,216,90,0.05); }
+.h-ctrl-slider {
+  -webkit-appearance:none; width:60px; height:2px; background:rgba(255,255,255,0.15); outline:none; cursor:pointer;
+}
+.h-ctrl-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; width:8px; height:8px; background:#e8d85a; border-radius:50%;
+}
+.h-section-wrap { position:relative; cursor:pointer; padding:2px; border:1px solid transparent; transition:border 0.2s; }
+.h-section-wrap:hover { border-color:rgba(232,216,90,0.3); }
+.h-section-wrap.active { border-color:#e8d85a; background:rgba(232,216,90,0.02); }
 
 /* print */
 @media print {
@@ -316,6 +346,7 @@ function ECell({ value, onChange, multiline }) {
 /* ─── PAPER BODY (full A+B+C) ────────────────────────────────────────────────── */
 
 function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, onAddSep, onUpdateSep }) {
+  const [showHeadCtrl, setShowHeadCtrl] = useState(false);
   const upd = (p, v) => { if (!readOnly && onUpdate) onUpdate(p, v); };
   // Called as f() not <F/> to prevent React unmounting input on every keystroke
   const f = (path, value, multiline = false) =>
@@ -465,12 +496,52 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
   return (
     <div style={{ fontFamily: "'Times New Roman', serif", fontSize: "9px", lineHeight: "1.3", color: "#000" }}>
       {/* header info */}
-      <div style={{ fontWeight: "bold", fontSize: "9px" }}>{f("code", data.code)}</div>
-      <div style={{ display: "flex", gap: 8, fontSize: "8.5px", marginTop: 1 }}>
-        <span>Roll No :....................</span>
-        <span style={{ flex: 1 }}>Signature:..................................</span>
+      <div
+        className={`h-section-wrap ${!readOnly && showHeadCtrl ? "active" : ""}`}
+        onClick={() => !readOnly && setShowHeadCtrl(prev => !prev)}
+        style={{
+          display: "flex", flexDirection: "column",
+          alignItems: (data.headerAlign || "left") === "left" ? "flex-start" : "flex-end",
+          textAlign: data.headerAlign || "left",
+          gap: `${(data.headerSpacing || 0) * 1.5}px`,
+        }}
+      >
+        {!readOnly && showHeadCtrl && (
+          <div className="h-ctrl" onClick={e => e.stopPropagation()}>
+            <div className="h-ctrl-label">Align:</div>
+            <button
+              className={`h-ctrl-btn ${(data.headerAlign || "left") === "left" ? "active" : ""}`}
+              onClick={() => upd("headerAlign", "left")}
+            >Left</button>
+            <button
+              className={`h-ctrl-btn ${data.headerAlign === "right" ? "active" : ""}`}
+              onClick={() => upd("headerAlign", "right")}
+            >Right</button>
+
+            <div className="h-ctrl-label" style={{ marginLeft: "6px" }}>Spacing:</div>
+            <input
+              type="range" min="0" max="6" step="1"
+              className="h-ctrl-slider"
+              value={data.headerSpacing || 1}
+              onChange={e => upd("headerSpacing", parseInt(e.target.value))}
+            />
+            <button className="h-ctrl-btn" style={{ marginLeft: "4px", color: "#f05050" }} onClick={() => setShowHeadCtrl(false)}>✕</button>
+          </div>
+        )}
+
+        <div style={{ fontWeight: "bold", fontSize: "9px" }}>{f("code", data.code)}</div>
+
+        <div style={{
+          display: "flex",
+          flexDirection: (data.headerAlign === "right") ? "row-reverse" : "row",
+          gap: 8, fontSize: "8.5px"
+        }}>
+          <span>{f("rollNoLineRaw", data.rollNoLineRaw)}</span>
+          <span style={{ flex: data.headerAlign === "right" ? "unset" : 1 }}>{f("sigLineRaw", data.sigLineRaw)}</span>
+        </div>
+
+        <div style={{ fontSize: "8.5px" }}>{f("classLineRaw", data.classLineRaw)}</div>
       </div>
-      <div style={{ fontSize: "8.5px" }}>Class :.....................</div>
       <div style={{ textAlign: "center", margin: "4px 0 3px" }}>
         <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("semester", data.semester)}</div>
         <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("examType", data.examType)}</div>
