@@ -94,7 +94,7 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 .h-foot { text-align:center; margin-top:20px; font-family:'Inconsolata',monospace; font-size:9.5px; color:rgba(245,242,236,0.18); letter-spacing:0.8px; }
 
 /* editor canvas */
-.ecanvas { padding:24px 14px 48px; display:flex; justify-content:center; background:#f0ede8; min-height:calc(100vh - 50px); }
+.ecanvas { padding:40px 24px; display:flex; justify-content:center; align-items:flex-start; gap:32px; background:#f0ede8; min-height:calc(100vh - 50px); }
 
 /* A4 landscape sheet */
 .psheet { background:white; width:297mm; min-height:210mm; padding:8mm 9mm; display:flex; gap:5mm; box-shadow:0 8px 32px rgba(0,0,0,0.1),0 24px 64px rgba(0,0,0,0.07); border-radius:2px; }
@@ -152,32 +152,33 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 .sep-line { flex:1; height:1px; background:#bbb; }
 .sep-label { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#555; white-space:nowrap; }
 .sep-input { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#333; background:transparent; border:none; border-bottom:1px dashed #aaa; outline:none; width:80px; text-align:center; padding:0 2px; }
+.sep-input { font-family:'Times New Roman',serif; font-size:8px; font-style:italic; color:#333; background:transparent; border:none; border-bottom:1px dashed #aaa; outline:none; width:80px; text-align:center; padding:0 2px; }
 .sep-del { background:none; border:none; color:#c02020; font-size:11px; cursor:pointer; padding:0 2px; line-height:1; flex-shrink:0; }
 
-/* header control popup */
-.h-ctrl {
-  position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
-  background: #1c1c1c; border: 1px solid #e8d85a; padding: 6px 12px;
-  border-radius: 4px; display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 100;
+/* Settings Sidebar */
+.settings-bar { 
+  width: 300px; background: #141414; border: 1px solid rgba(255,255,255,0.08); border-radius: 4px; 
+  padding: 28px 24px; height: fit-content; position: sticky; top: 74px; flex-shrink: 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2); animation: sb-slide 0.3s cubic-bezier(.22,1,.36,1);
 }
-.h-ctrl-label { font-family:'Inconsolata',monospace; font-size:9px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; margin-right:-4px; }
-.h-ctrl-btn {
-  background:transparent; border:1px solid rgba(255,255,255,0.1); color:#fff;
-  font-family:'Inconsolata',monospace; font-size:9px; padding:3px 8px; cursor:pointer;
-  border-radius:2px; transition: all 0.1s;
+@keyframes sb-slide { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+.sb-title { font-family:'Inconsolata',monospace; font-size:11px; font-weight:700; color:#e8d85a; text-transform:uppercase; letter-spacing:2.5px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; }
+.sb-close { background:none; border:none; color:rgba(255,255,255,0.3); font-size:18px; cursor:pointer; padding:4px; }
+.sb-close:hover { color:#fff; }
+.sb-group { margin-bottom:24px; }
+.sb-label { display:block; font-family:'Inconsolata',monospace; font-size:9.5px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(245,242,236,0.4); margin-bottom:10px; }
+.sb-btn-row { display:flex; gap:8px; }
+.sb-btn { 
+  flex:1; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); 
+  color:rgba(255,255,255,0.6); padding:8px; font-family:'Inconsolata',monospace; font-size:10px; cursor:pointer; transition:all 0.12s; 
 }
-.h-ctrl-btn:hover { border-color:rgba(255,255,255,0.3); }
-.h-ctrl-btn.active { color:#e8d85a; border-color:#e8d85a; background:rgba(232,216,90,0.05); }
-.h-ctrl-slider {
-  -webkit-appearance:none; width:60px; height:2px; background:rgba(255,255,255,0.15); outline:none; cursor:pointer;
-}
-.h-ctrl-slider::-webkit-slider-thumb {
-  -webkit-appearance:none; width:8px; height:8px; background:#e8d85a; border-radius:50%;
-}
-.h-section-wrap { position:relative; cursor:pointer; padding:2px; border:1px solid transparent; transition:border 0.2s; }
-.h-section-wrap:hover { border-color:rgba(232,216,90,0.3); }
-.h-section-wrap.active { border-color:#e8d85a; background:rgba(232,216,90,0.02); }
+.sb-btn:hover { border-color:rgba(255,255,255,0.3); }
+.sb-btn.active { background:rgba(232,216,90,0.1); border-color:#e8d85a; color:#e8d85a; }
+.sb-slider { width:100%; -webkit-appearance:none; height:2px; background:rgba(255,255,255,0.1); outline:none; margin:10px 0; }
+.sb-slider::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; background:#e8d85a; border-radius:50%; cursor:pointer; }
+.h-section-wrap { position:relative; cursor:pointer; padding:6px; border:1px solid transparent; transition:border 0.2s, background 0.2s; border-radius: 2px; }
+.h-section-wrap:hover { border-color:rgba(232,216,90,0.3); background:rgba(232,216,90,0.02); }
+.h-section-wrap.selected { border-color:#e8d85a; background:rgba(232,216,90,0.04); }
 
 /* print */
 @media print {
@@ -345,8 +346,7 @@ function ECell({ value, onChange, multiline }) {
 
 /* ─── PAPER BODY (full A+B+C) ────────────────────────────────────────────────── */
 
-function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, onAddSep, onUpdateSep }) {
-  const [showHeadCtrl, setShowHeadCtrl] = useState(false);
+function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, onAddSep, onUpdateSep, onSelectSection, activeSection }) {
   const upd = (p, v) => { if (!readOnly && onUpdate) onUpdate(p, v); };
   // Called as f() not <F/> to prevent React unmounting input on every keystroke
   const f = (path, value, multiline = false) =>
@@ -495,40 +495,22 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
 
   return (
     <div style={{ fontFamily: "'Times New Roman', serif", fontSize: "9px", lineHeight: "1.3", color: "#000" }}>
-      {/* header info */}
+      {/* header info section */}
       <div
-        className={`h-section-wrap ${!readOnly && showHeadCtrl ? "active" : ""}`}
-        onClick={() => !readOnly && setShowHeadCtrl(prev => !prev)}
+        className={`h-section-wrap ${!readOnly && activeSection === "header" ? "selected" : ""}`}
+        onClick={(e) => {
+          if (readOnly) return;
+          e.stopPropagation();
+          onSelectSection && onSelectSection("header");
+        }}
         style={{
           display: "flex", flexDirection: "column",
           alignItems: (data.headerAlign || "left") === "left" ? "flex-start" : "flex-end",
           textAlign: data.headerAlign || "left",
           gap: `${(data.headerSpacing || 0) * 1.5}px`,
+          marginBottom: 6
         }}
       >
-        {!readOnly && showHeadCtrl && (
-          <div className="h-ctrl" onClick={e => e.stopPropagation()}>
-            <div className="h-ctrl-label">Align:</div>
-            <button
-              className={`h-ctrl-btn ${(data.headerAlign || "left") === "left" ? "active" : ""}`}
-              onClick={() => upd("headerAlign", "left")}
-            >Left</button>
-            <button
-              className={`h-ctrl-btn ${data.headerAlign === "right" ? "active" : ""}`}
-              onClick={() => upd("headerAlign", "right")}
-            >Right</button>
-
-            <div className="h-ctrl-label" style={{ marginLeft: "6px" }}>Spacing:</div>
-            <input
-              type="range" min="0" max="6" step="1"
-              className="h-ctrl-slider"
-              value={data.headerSpacing || 1}
-              onChange={e => upd("headerSpacing", parseInt(e.target.value))}
-            />
-            <button className="h-ctrl-btn" style={{ marginLeft: "4px", color: "#f05050" }} onClick={() => setShowHeadCtrl(false)}>✕</button>
-          </div>
-        )}
-
         <div style={{ fontWeight: "bold", fontSize: "9px" }}>{f("code", data.code)}</div>
 
         <div style={{
@@ -687,7 +669,59 @@ function EditorPage({ initialData, onBack, onHelp }) {
 
   const handlePrint = () => setShowPrintDlg(true);
 
-  const shared = { data, onUpdate: updateField, editMode, onAddRow: addRow, onRemoveRow: removeRow, onAddSep: addSeparator, onUpdateSep: updateSepLabel };
+  const [activeSection, setActiveSection] = useState(null);
+
+  const shared = {
+    data, onUpdate: updateField, editMode, onAddRow: addRow, onRemoveRow: removeRow,
+    onAddSep: addSeparator, onUpdateSep: updateSepLabel,
+    onSelectSection: setActiveSection, activeSection
+  };
+
+  const renderSettingsBar = () => {
+    if (activeSection === "header") {
+      return (
+        <div className="settings-bar" onClick={e => e.stopPropagation()}>
+          <div className="sb-title">
+            Header Settings
+            <button className="sb-close" onClick={() => setActiveSection(null)}>✕</button>
+          </div>
+
+          <div className="sb-group">
+            <label className="sb-label">Alignment</label>
+            <div className="sb-btn-row">
+              <button
+                className={`sb-btn ${(data.headerAlign || "left") === "left" ? "active" : ""}`}
+                onClick={() => updateField("headerAlign", "left")}
+              >Left</button>
+              <button
+                className={`sb-btn ${data.headerAlign === "right" ? "active" : ""}`}
+                onClick={() => updateField("headerAlign", "right")}
+              >Right</button>
+            </div>
+          </div>
+
+          <div className="sb-group">
+            <label className="sb-label">Line Spacing</label>
+            <input
+              type="range" min="0" max="8" step="1"
+              className="sb-slider"
+              value={data.headerSpacing || 1}
+              onChange={e => updateField("headerSpacing", parseInt(e.target.value))}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'rgba(255,255,255,0.2)' }}>
+              <span>Tight</span>
+              <span>Loose</span>
+            </div>
+          </div>
+
+          <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic', lineHeight: '1.5' }}>
+            Tip: You can edit the text directly by clicking on it in the editor panel.
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -718,8 +752,8 @@ function EditorPage({ initialData, onBack, onHelp }) {
       </div>
 
       {/* CANVAS */}
-      <div className="ecanvas">
-        <div className="psheet">
+      <div className="ecanvas" onClick={() => setActiveSection(null)}>
+        <div className="psheet" onClick={e => e.stopPropagation()}>
 
           {/* LEFT — EDITABLE */}
           <div className={`phalf edit-panel ${editMode ? "ed" : ""}`}>
@@ -758,6 +792,9 @@ function EditorPage({ initialData, onBack, onHelp }) {
           </div>
 
         </div>
+
+        {/* SETTINGS SIDEBAR */}
+        {renderSettingsBar()}
       </div>
     </>
   );
