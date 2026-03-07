@@ -45,6 +45,7 @@ const makeDefaultData = (subject = "", department = "", code = "") => ({
   rollNoLineRaw: "Roll No :....................",
   sigLineRaw: "Signature:..................................",
   classLineRaw: "Class :.....................",
+  paperScale: 100,
 });
 
 /* ─── GLOBAL STYLES ──────────────────────────────────────────────────────────── */
@@ -182,7 +183,10 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
 
 /* print */
 @media print {
-  body { background:white!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body { 
+    background:white!important; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    --pscale: 1; /* will be set via JS */
+  }
   .g-tb, .layout-strip, .pdlg-overlay { display:none!important; }
   .phalf-label { display:none!important; }
   .ecanvas { padding:0; background:white!important; min-height:unset; display:block; }
@@ -190,53 +194,57 @@ body { background: #0e0e0e; font-family: 'Inconsolata', monospace; }
   .sep-del, .add-sep-btn { display:none!important; }
   button { display:none!important; }
 
+  /* Strict paper constraints */
+  .psheet { border:none!important; box-shadow:none!important; margin:0!important; page-break-after:always; max-height:100vh; overflow:hidden; }
+  .phalf { max-height:100%; overflow:hidden!important; }
+
   /* ── SINGLE PORTRAIT (default) ── */
-  body.print-single-portrait .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
+  body.print-single-portrait .psheet { width:100%; min-height:100vh; gap:0; padding:0; display:block; }
   body.print-single-portrait .pdiv, body.print-single-portrait .dup-copy { display:none!important; }
-  body.print-single-portrait .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:10mm 14mm; }
+  body.print-single-portrait .phalf { width:100%; display:block; padding:10mm 15mm; }
   body.print-single-portrait .phalf-body { overflow:visible!important; }
-  body.print-single-portrait .phalf-body > div { font-size:13pt!important; line-height:1.6!important; }
-  body.print-single-portrait .phalf-body table { font-size:12pt!important; width:100%!important; }
-  body.print-single-portrait .phalf-body th { font-size:11pt!important; padding:5pt 7pt!important; }
-  body.print-single-portrait .phalf-body td { font-size:11pt!important; padding:5pt 7pt!important; }
-  body.print-single-portrait .phalf-body span { font-size:11pt!important; font-family:'Times New Roman',serif!important; }
+  body.print-single-portrait .phalf-body > div { font-size:calc(13pt * var(--pscale))!important; line-height:1.6!important; }
+  body.print-single-portrait .phalf-body table { font-size:calc(12pt * var(--pscale))!important; width:100%!important; }
+  body.print-single-portrait .phalf-body th { font-size:calc(11pt * var(--pscale))!important; padding:5pt 7pt!important; }
+  body.print-single-portrait .phalf-body td { font-size:calc(11pt * var(--pscale))!important; padding:5pt 7pt!important; }
+  body.print-single-portrait .phalf-body span { font-size:calc(11pt * var(--pscale))!important; font-family:'Times New Roman',serif!important; }
 
   /* ── SINGLE LANDSCAPE ── */
-  body.print-single-landscape .psheet { box-shadow:none; border-radius:0; width:100%; min-height:unset; gap:0; padding:0; display:block; }
+  body.print-single-landscape .psheet { width:100%; min-height:100vh; gap:0; padding:0; display:block; }
   body.print-single-landscape .pdiv, body.print-single-landscape .dup-copy { display:none!important; }
-  body.print-single-landscape .phalf { border:none!important; overflow:visible!important; width:100%; display:block; padding:8mm 14mm; }
+  body.print-single-landscape .phalf { width:100%; display:block; padding:8mm 14mm; }
   body.print-single-landscape .phalf-body { overflow:visible!important; }
-  body.print-single-landscape .phalf-body > div { font-size:12pt!important; line-height:1.5!important; }
-  body.print-single-landscape .phalf-body table { font-size:11pt!important; width:100%!important; }
-  body.print-single-landscape .phalf-body th { font-size:10pt!important; padding:4pt 6pt!important; }
-  body.print-single-landscape .phalf-body td { font-size:10pt!important; padding:4pt 6pt!important; }
-  body.print-single-landscape .phalf-body span { font-size:10pt!important; font-family:'Times New Roman',serif!important; }
+  body.print-single-landscape .phalf-body > div { font-size:calc(12pt * var(--pscale))!important; line-height:1.5!important; }
+  body.print-single-landscape .phalf-body table { font-size:calc(11pt * var(--pscale))!important; width:100%!important; }
+  body.print-single-landscape .phalf-body th { font-size:calc(10pt * var(--pscale))!important; padding:4pt 6pt!important; }
+  body.print-single-landscape .phalf-body td { font-size:calc(10pt * var(--pscale))!important; padding:4pt 6pt!important; }
+  body.print-single-landscape .phalf-body span { font-size:calc(10pt * var(--pscale))!important; font-family:'Times New Roman',serif!important; }
 
-  /* ── DUPLICATE PORTRAIT — two half-page columns on A4 portrait ── */
-  body.print-dup-portrait .psheet { box-shadow:none; border-radius:0; width:100%; min-height:297mm; gap:0; padding:5mm; display:flex; flex-direction:row; }
+  /* ── DUPLICATE PORTRAIT ── */
+  body.print-dup-portrait .psheet { width:100%; min-height:100vh; gap:0; padding:5mm; display:flex; flex-direction:row; }
   body.print-dup-portrait .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
   body.print-dup-portrait .dup-copy { display:flex!important; }
-  body.print-dup-portrait .phalf { border:1px solid #ccc!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:3mm; }
+  body.print-dup-portrait .phalf { border:1px solid #ccc!important; flex:1; display:flex; flex-direction:column; padding:3mm; }
   body.print-dup-portrait .phalf-body { overflow:visible!important; }
-  body.print-dup-portrait .phalf-body > div { font-size:7pt!important; line-height:1.4!important; }
-  body.print-dup-portrait .phalf-body table { font-size:6.5pt!important; width:100%!important; }
-  body.print-dup-portrait .phalf-body th { font-size:6pt!important; padding:2pt 3pt!important; }
-  body.print-dup-portrait .phalf-body td { font-size:6pt!important; padding:2pt 3pt!important; }
-  body.print-dup-portrait .phalf-body span { font-size:6pt!important; font-family:'Times New Roman',serif!important; }
+  body.print-dup-portrait .phalf-body > div { font-size:calc(7pt * var(--pscale))!important; line-height:1.4!important; }
+  body.print-dup-portrait .phalf-body table { font-size:calc(6.5pt * var(--pscale))!important; width:100%!important; }
+  body.print-dup-portrait .phalf-body th { font-size:calc(6pt * var(--pscale))!important; padding:2pt 3pt!important; }
+  body.print-dup-portrait .phalf-body td { font-size:calc(6pt * var(--pscale))!important; padding:2pt 3pt!important; }
+  body.print-dup-portrait .phalf-body span { font-size:calc(6pt * var(--pscale))!important; font-family:'Times New Roman',serif!important; }
 
-  /* ── DUPLICATE LANDSCAPE — two copies on A4 landscape ── */
-  body.print-dup-landscape .psheet { box-shadow:none; border-radius:0; width:100%; min-height:210mm; gap:0; padding:5mm; display:flex; flex-direction:row; }
+  /* ── DUPLICATE LANDSCAPE ── */
+  body.print-dup-landscape .psheet { width:100%; min-height:100vh; gap:0; padding:5mm; display:flex; flex-direction:row; }
   body.print-dup-landscape .pdiv { display:block!important; width:1px!important; background:#999!important; margin:0 3mm!important; flex-shrink:0; }
   body.print-dup-landscape .dup-copy { display:flex!important; }
-  body.print-dup-landscape .phalf { border:1px solid #ccc!important; overflow:visible!important; flex:1; display:flex; flex-direction:column; padding:4mm; }
+  body.print-dup-landscape .phalf { border:1px solid #ccc!important; flex:1; display:flex; flex-direction:column; padding:4mm; }
   body.print-dup-landscape .phalf-body { overflow:visible!important; }
-  body.print-dup-landscape .phalf-body > div { font-size:9pt!important; line-height:1.4!important; }
-  body.print-dup-landscape .phalf-body table { font-size:8.5pt!important; width:100%!important; }
-  body.print-dup-landscape .phalf-body th { font-size:8pt!important; padding:3pt 4pt!important; }
-  body.print-dup-landscape .phalf-body td { font-size:8pt!important; padding:3pt 4pt!important; }
-  body.print-dup-landscape .phalf-body span { font-size:8pt!important; font-family:'Times New Roman',serif!important; }
+  body.print-dup-landscape .phalf-body > div { font-size:calc(9pt * var(--pscale))!important; line-height:1.4!important; }
+  body.print-dup-landscape .phalf-body table { font-size:calc(8.5pt * var(--pscale))!important; width:100%!important; }
+  body.print-dup-landscape .phalf-body th { font-size:calc(8pt * var(--pscale))!important; padding:3pt 4pt!important; }
+  body.print-dup-landscape .phalf-body td { font-size:calc(8pt * var(--pscale))!important; padding:3pt 4pt!important; }
+  body.print-dup-landscape .phalf-body span { font-size:calc(8pt * var(--pscale))!important; font-family:'Times New Roman',serif!important; }
 
-  @page { size:A4; margin:0; }
+  @page { margin:0; }
 }
 `;
 
@@ -493,8 +501,16 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
     );
   };
 
+  const scale = (data.paperScale || 100) / 100;
+
   return (
-    <div style={{ fontFamily: "'Times New Roman', serif", fontSize: "9px", lineHeight: "1.3", color: "#000" }}>
+    <div style={{
+      fontFamily: "'Times New Roman', serif",
+      fontSize: `${9 * scale}px`,
+      lineHeight: 1.3,
+      color: "#000",
+      transition: "font-size 0.2s"
+    }}>
       {/* header info section */}
       <div
         className={`h-section-wrap ${!readOnly && activeSection === "header" ? "selected" : ""}`}
@@ -511,28 +527,28 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
           marginBottom: 6
         }}
       >
-        <div style={{ fontWeight: "bold", fontSize: "9px" }}>{f("code", data.code)}</div>
+        <div style={{ fontWeight: "bold", fontSize: `${9 * scale}px` }}>{f("code", data.code)}</div>
 
         <div style={{
           display: "flex",
           flexDirection: (data.headerAlign === "right") ? "row-reverse" : "row",
-          gap: 8, fontSize: "8.5px"
+          gap: 8, fontSize: `${8.5 * scale}px`
         }}>
           <span>{f("rollNoLineRaw", data.rollNoLineRaw)}</span>
           <span style={{ flex: data.headerAlign === "right" ? "unset" : 1 }}>{f("sigLineRaw", data.sigLineRaw)}</span>
         </div>
 
-        <div style={{ fontSize: "8.5px" }}>{f("classLineRaw", data.classLineRaw)}</div>
+        <div style={{ fontSize: `${8.5 * scale}px` }}>{f("classLineRaw", data.classLineRaw)}</div>
       </div>
       <div style={{ textAlign: "center", margin: "4px 0 3px" }}>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("semester", data.semester)}</div>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("examType", data.examType)}</div>
-        <div style={{ fontWeight: "bold", fontSize: "9.5px" }}>{f("month", data.month)}</div>
-        <div style={{ fontSize: "8.5px", marginTop: 1 }}>{f("department", data.department)}</div>
-        <div style={{ fontWeight: "bold", fontSize: "10px", textTransform: "uppercase", marginTop: 1 }}>
+        <div style={{ fontWeight: "bold", fontSize: `${9.5 * scale}px` }}>{f("semester", data.semester)}</div>
+        <div style={{ fontWeight: "bold", fontSize: `${9.5 * scale}px` }}>{f("examType", data.examType)}</div>
+        <div style={{ fontWeight: "bold", fontSize: `${9.5 * scale}px` }}>{f("month", data.month)}</div>
+        <div style={{ fontSize: `${8.5 * scale}px`, marginTop: 1 }}>{f("department", data.department)}</div>
+        <div style={{ fontWeight: "bold", fontSize: `${10 * scale}px`, textTransform: "uppercase", marginTop: 1 }}>
           {f("subject", data.subject)}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "8.5px", marginTop: 2 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: `${8.5 * scale}px`, marginTop: 2 }}>
           <span>(Time: {f("time", data.time)})</span>
           <span>(Maximum Marks: {f("maxMarks", data.maxMarks)})</span>
         </div>
@@ -657,12 +673,14 @@ function EditorPage({ initialData, onBack, onHelp }) {
     let st = document.getElementById(styleId);
     if (!st) { st = document.createElement("style"); st.id = styleId; document.head.appendChild(st); }
     st.textContent = `@page { size: A4 ${orient}; margin: 0; }`;
+    document.body.style.setProperty("--pscale", (data.paperScale || 100) / 100);
     document.body.classList.add(cls);
     setTimeout(() => {
       window.print();
       setTimeout(() => {
         setEditMode(true);
         document.body.classList.remove(cls);
+        document.body.style.removeProperty("--pscale");
       }, 600);
     }, 150);
   };
@@ -714,8 +732,25 @@ function EditorPage({ initialData, onBack, onHelp }) {
             </div>
           </div>
 
+          <div className="sb-group" style={{ marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '24px' }}>
+            <label className="sb-label">
+              📄 Paper Scale
+              <span style={{ float: 'right', color: '#e8d85a' }}>{data.paperScale || 100}%</span>
+            </label>
+            <input
+              type="range" min="50" max="150" step="5"
+              className="sb-slider"
+              value={data.paperScale || 100}
+              onChange={e => updateField("paperScale", parseInt(e.target.value))}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: 'rgba(255,255,255,0.2)' }}>
+              <span>Strict 1-Page</span>
+              <span>Large Text</span>
+            </div>
+          </div>
+
           <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic', lineHeight: '1.5' }}>
-            Tip: You can edit the text directly by clicking on it in the editor panel.
+            Tip: Decrease scale to fit more questions on a single A4 sheet. This ensures your paper costs only 1 page.
           </div>
         </div>
       );
