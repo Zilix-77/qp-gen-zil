@@ -13,7 +13,7 @@ const SECTIONS = [
       },
       {
         name: "Department",
-        desc: "Optional. The department name that appears under the paper title, e.g. 'Department of Computer Hardware Engineering'.",
+        desc: "Optional. The department name that appears under the paper title, e.g. 'Department of Computer Engineering'.",
       },
       {
         name: "Paper Code",

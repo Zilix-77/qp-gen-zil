@@ -276,7 +276,7 @@ function HomePage({ onStart, onHelp }) {
         <div className="fg-row">
           <div className="fg">
             <label className="fg-label">Department</label>
-            <input className="fg-input" placeholder="e.g. Computer Hardware" value={department}
+            <input className="fg-input" placeholder="e.g. Computer Engineering" value={department}
               onChange={e => setDepartment(e.target.value)} onKeyDown={e => e.key === "Enter" && submit()} />
           </div>
           <div className="fg">
@@ -287,9 +287,9 @@ function HomePage({ onStart, onHelp }) {
         </div>
 
         <button className="h-start" onClick={submit} disabled={!subject.trim()}>Build Paper →</button>
-        <div className="h-foot" style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div className="h-foot" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>A4 landscape · two-sided · print / PDF ready</span>
-          <button onClick={onHelp} style={{ background:"transparent", border:"none", color:"rgba(245,242,236,0.35)", fontFamily:"Inconsolata,monospace", fontSize:"10px", cursor:"pointer", letterSpacing:"1px", padding:0, textDecoration:"underline" }}>? Help</button>
+          <button onClick={onHelp} style={{ background: "transparent", border: "none", color: "rgba(245,242,236,0.35)", fontFamily: "Inconsolata,monospace", fontSize: "10px", cursor: "pointer", letterSpacing: "1px", padding: 0, textDecoration: "underline" }}>? Help</button>
         </div>
       </div>
     </div>
@@ -394,7 +394,7 @@ function PaperBody({ data, onUpdate, readOnly, editMode, onAddRow, onRemoveRow, 
                 <div className="sep-line" />
                 {editMode
                   ? <input className="sep-input" value={row.label || "OR"}
-                      onChange={e => onUpdateSep(part, i, e.target.value)} />
+                    onChange={e => onUpdateSep(part, i, e.target.value)} />
                   : <span className="sep-label">{row.label || "OR"}</span>
                 }
                 <div className="sep-line" />
@@ -520,17 +520,17 @@ function PrintDialog({ onConfirm, onCancel }) {
           </div>
           <div className="orient-btns">
             <button className={`orient-btn ${orient === "portrait" ? "active" : ""}`} onClick={() => setOrient("portrait")}>
-              <span style={{ fontSize:14 }}>▯</span> Portrait
+              <span style={{ fontSize: 14 }}>▯</span> Portrait
             </button>
             <button className={`orient-btn ${orient === "landscape" ? "active" : ""}`} onClick={() => setOrient("landscape")}>
-              <span style={{ fontSize:14 }}>▭</span> Landscape
+              <span style={{ fontSize: 14 }}>▭</span> Landscape
             </button>
           </div>
         </div>
 
         {/* Summary */}
-        <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:3, padding:"10px 14px", fontSize:10, color:"rgba(240,237,232,0.5)", fontFamily:"Inconsolata,monospace", letterSpacing:"0.5px" }}>
-          Will print: <span style={{ color:"#e8d85a" }}>
+        <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 3, padding: "10px 14px", fontSize: 10, color: "rgba(240,237,232,0.5)", fontFamily: "Inconsolata,monospace", letterSpacing: "0.5px" }}>
+          Will print: <span style={{ color: "#e8d85a" }}>
             {dup ? "2 copies" : "1 copy"} · A4 {orient} · {dup ? (orient === "landscape" ? "side by side" : "two columns") : "full page"}
           </span>
         </div>
@@ -669,10 +669,10 @@ function EditorPage({ initialData, onBack, onHelp }) {
           </div>
 
           {/* DUPLICATE COPY — hidden on screen, shown during dup print via CSS */}
-          <div className="pdiv dup-copy" style={{ display:"none" }} />
-          <div className="phalf dup-copy" style={{ display:"none", flexDirection:"column" }}>
-            <div className="phalf-label lbl-preview" style={{ background:"#d4ecd4", color:"#2a5a2a" }}>
-              <span className="lbl-dot" style={{ background:"#2a5a2a" }} />
+          <div className="pdiv dup-copy" style={{ display: "none" }} />
+          <div className="phalf dup-copy" style={{ display: "none", flexDirection: "column" }}>
+            <div className="phalf-label lbl-preview" style={{ background: "#d4ecd4", color: "#2a5a2a" }}>
+              <span className="lbl-dot" style={{ background: "#2a5a2a" }} />
               ⧉ Duplicate copy
             </div>
             <div className="phalf-body">
