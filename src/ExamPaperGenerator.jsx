@@ -1,5 +1,6 @@
 // ExamPaperGenerator.jsx
 import { useState, useEffect } from "react";
+import HelpPage from "./HelpPage";
 
 /* ─── CONSTANTS ─────────────────────────────────────────────────────────────── */
 
