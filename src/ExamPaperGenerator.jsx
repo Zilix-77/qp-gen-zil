@@ -23,7 +23,7 @@ const makeDefaultData = (subject = "", department = "", code = "") => ({
   semester: "SIXTH SEMESTER DIPLOMA FIRST SERIES",
   examType: "EXAMINATION",
   month: "FEBRUARY 2026",
-  department: department || "Department of Computer Hardware Engineering",
+  department: department || "Department of Computer Engineering",
   subject: subject.toUpperCase() || "SUBJECT NAME",
   time: "1 Hour",
   maxMarks: "20",
