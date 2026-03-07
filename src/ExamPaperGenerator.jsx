@@ -1,6 +1,5 @@
 // ExamPaperGenerator.jsx
 import { useState, useEffect } from "react";
-import HelpPage from "./HelpPage";
 
 /* ─── CONSTANTS ─────────────────────────────────────────────────────────────── */
 
@@ -277,7 +276,7 @@ function HomePage({ onStart, onHelp }) {
         <div className="fg-row">
           <div className="fg">
             <label className="fg-label">Department</label>
-            <input className="fg-input" placeholder="e.g. Computer Engineering" value={department}
+            <input className="fg-input" placeholder="e.g. Computer Hardware" value={department}
               onChange={e => setDepartment(e.target.value)} onKeyDown={e => e.key === "Enter" && submit()} />
           </div>
           <div className="fg">
