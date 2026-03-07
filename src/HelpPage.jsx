@@ -473,6 +473,9 @@ export default function HelpPage({ onBack }) {
 
           <div className="help-footer">
             Exam Paper Generator · Built with React + Vite · Deployed on Vercel
+            <div style={{ marginTop: "12px" }}>
+              Need help? <a href="mailto:adarsh.7025.v@gmail.com" style={{ color: "#e8d85a", textDecoration: "none" }}>Contact Developer / Report Bug</a>
+            </div>
           </div>
         </div>
       </div>

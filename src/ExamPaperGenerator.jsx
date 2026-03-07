@@ -289,7 +289,10 @@ function HomePage({ onStart, onHelp }) {
         <button className="h-start" onClick={submit} disabled={!subject.trim()}>Build Paper →</button>
         <div className="h-foot" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span>A4 landscape · two-sided · print / PDF ready</span>
-          <button onClick={onHelp} style={{ background: "transparent", border: "none", color: "rgba(245,242,236,0.35)", fontFamily: "Inconsolata,monospace", fontSize: "10px", cursor: "pointer", letterSpacing: "1px", padding: 0, textDecoration: "underline" }}>? Help</button>
+          <div style={{ display: "flex", gap: "14px", alignItems: "center" }}>
+            <a href="mailto:adarsh.7025.v@gmail.com" style={{ color: "rgba(245,242,236,0.35)", textDecoration: "underline", fontSize: "10px", transition: "color 0.12s" }} onMouseEnter={e => e.currentTarget.style.color = "#e8d85a"} onMouseLeave={e => e.currentTarget.style.color = "rgba(245,242,236,0.35)"}>Report Bug</a>
+            <button onClick={onHelp} style={{ background: "transparent", border: "none", color: "rgba(245,242,236,0.35)", fontFamily: "Inconsolata,monospace", fontSize: "10px", cursor: "pointer", letterSpacing: "1px", padding: 0, textDecoration: "underline" }}>? Help</button>
+          </div>
         </div>
       </div>
     </div>
@@ -631,6 +634,9 @@ function EditorPage({ initialData, onBack, onHelp }) {
         <div className="g-tb-brand">Exam Paper</div>
         <button className="g-btn g-btn-ghost" onClick={onHelp} title="Open help page">? Help</button>
         <div className="g-tb-subj">{data.subject}</div>
+        <a href="mailto:adarsh.7025.v@gmail.com" className="g-btn g-btn-ghost" style={{ textDecoration: 'none', border: 'none' }} title="Contact Dev / Report Bug">
+          Contact Dev
+        </a>
         <button
           className={`g-btn g-btn-ghost ${editMode ? "on" : ""}`}
           onClick={() => setEditMode(e => !e)}
